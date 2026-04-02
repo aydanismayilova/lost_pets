@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title text-center">New Pet Announcement</h3>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('posts.create_post') }}" method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.announcement_type.label(class="form-label") }}
+                            {{ form.announcement_type(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.animal_type.label(class="form-label") }}
+                            {{ form.animal_type(class="form-select") }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.breed.label(class="form-label") }}
+                            {{ form.breed(class="form-control", placeholder="e.g. Husky") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.color.label(class="form-label") }}
+                            {{ form.color(class="form-control", placeholder="e.g. Black and White") }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.district.label(class="form-label") }}
+                            {{ form.district(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.date_lost_found.label(class="form-label") }}
+                            {{ form.date_lost_found(class="form-control", type="date") }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="4") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.images.label(class="form-label") }}
+                        {{ form.images(class="form-control", multiple=True) }}
+                        <small class="text-muted">You can select up to 5 images.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">Post Announcement</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
