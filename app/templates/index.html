@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Filter Pets</h5>
+                <form action="{{ url_for('main.index') }}" method="get">
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select name="announcement_type" class="form-select">
+                            <option value="">All</option>
+                            <option value="Lost" {% if announcement_type == 'Lost' %}selected{% endif %}>Lost</option>
+                            <option value="Found" {% if announcement_type == 'Found' %}selected{% endif %}>Found</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Animal</label>
+                        <select name="animal_type" class="form-select">
+                            <option value="">All</option>
+                            <option value="Cat" {% if animal_type == 'Cat' %}selected{% endif %}>Cat</option>
+                            <option value="Dog" {% if animal_type == 'Dog' %}selected{% endif %}>Dog</option>
+                            <option value="Bird" {% if animal_type == 'Bird' %}selected{% endif %}>Bird</option>
+                            <option value="Other" {% if animal_type == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">District</label>
+                        <select name="district" class="form-select">
+                            <option value="">All</option>
+                            <option value="Absheron" {% if district == 'Absheron' %}selected{% endif %}>Absheron</option>
+                            <option value="Baku" {% if district == 'Baku' %}selected{% endif %}>Baku</option>
+                            <!-- add more as needed, or dynamically populate -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Search</label>
+                        <input type="text" name="search_query" class="form-control" value="{{ search_query or '' }}" placeholder="Keyword...">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-link w-100">Reset</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Active Announcements</h1>
+            <div class="btn-group">
+                <a href="{{ url_for('main.index', sort_order='newest', **request.args) }}" class="btn btn-outline-secondary {{ 'active' if sort_order == 'newest' else '' }}">Newest</a>
+                <a href="{{ url_for('main.index', sort_order='oldest', **request.args) }}" class="btn btn-outline-secondary {{ 'active' if sort_order == 'oldest' else '' }}">Oldest</a>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for post in posts.items %}
+            <div class="col">
+                <div class="card h-100 pet-card shadow-sm">
+                    {% if post.images.first() %}
+                    <img src="{{ url_for('static', filename='uploads/' + post.images.first().image_filename) }}" class="card-img-top" alt="Pet Image" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <span>No Image</span>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge {{ 'bg-danger' if post.announcement_type == 'Lost' else 'bg-success' }}">{{ post.announcement_type }}</span>
+                            <span class="text-muted small">{{ post.animal_type }}</span>
+                        </div>
+                        <h5 class="card-title">{{ post.breed or 'Unknown Breed' }}</h5>
+                        <p class="card-text text-truncate">{{ post.description }}</p>
+                        <p class="small text-muted mb-0"><i class="bi bi-geo-alt"></i> {{ post.district }}</p>
+                        <p class="small text-muted"><i class="bi bi-calendar"></i> {{ post.date_lost_found.strftime('%b %d, %Y') }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <a href="{{ url_for('posts.post_detail', post_id=post.id) }}" class="btn btn-outline-primary btn-sm w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">No pets found matching your criteria.</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                  {% if page_num %}
+                    {% if posts.page == page_num %}
+                      <li class="page-item active"><a class="page-link" href="{{ url_for('main.index', page=page_num, **request.args) }}">{{ page_num }}</a></li>
+                    {% else %}
+                      <li class="page-item"><a class="page-link" href="{{ url_for('main.index', page=page_num, **request.args) }}">{{ page_num }}</a></li>
+                    {% endif %}
+                  {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                  {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}
