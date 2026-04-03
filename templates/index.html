@@ -9,23 +9,44 @@
         .container { padding: 20px; text-align: center; }
         .btn-logout { color: white; background: #ff4b2b; padding: 8px 15px; text-decoration: none; border-radius: 5px; }
         .status-box { background: white; padding: 20px; border-radius: 10px; margin-top: 50px; display: inline-block; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .pets-list { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 30px; }
+        .pet-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); width: 300px; }
     </style>
 </head>
 <body>
 
     <nav>
         <span>Heyvanlar Platforması (PRD v1.0)</span>
-        <a href="/logout" class="btn-logout">Çıxış Et</a>
+        <div>
+            <a href="/post_ad" style="color: white; background: #00b894; padding: 8px 15px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Yeni Elan</a>
+            <a href="/logout" class="btn-logout">Çıxış Et</a>
+        </div>
     </nav>
 
     <div class="container">
         <div class="status-box">
             <h1>Xoş gəldiniz!</h1>
             <p>Siz hazırda sistemdə <strong>Qeydiyyatlı İstifadəçi</strong> kimi görünürsünüz.</p>
-            <p>Buradan itirilmiş heyvan elanlarına baxa və ya yeni elan yarada bilərsiniz[cite: 54].</p>
+            <p>Buradan itirilmiş heyvan elanlarına baxa və ya yeni elan yarada bilərsiniz.</p>
             <hr>
-            <p><i>Tezliklə: Elan yerləşdirmə forması (F-03)</i></p>
         </div>
+
+        {% if pets %}
+        <h2>Elanlar</h2>
+        <div class="pets-list">
+            {% for pet in pets %}
+            <div class="pet-card">
+                <h3>{{ pet.name }}</h3>
+                <p><strong>Status:</strong> {{ 'İtirilib' if pet.status == 'lost' else 'Tapılıb' }}</p>
+                <p>{{ pet.description }}</p>
+                <p><strong>Yerləşmə:</strong> {{ pet.location }}</p>
+                <p><strong>Əlaqə:</strong> {{ pet.contact }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Hələ heç bir elan yoxdur. İlk elanı siz yerləşdirin!</p>
+        {% endif %}
     </div>
 
 </body>

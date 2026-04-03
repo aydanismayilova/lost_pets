@@ -1,11 +1,11 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'gizli-acar-123'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{app.instance_path}/database.db'
 db = SQLAlchemy(app)
 
 login_manager = LoginManager()
@@ -17,6 +17,16 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    pets = db.relationship('Pet', backref='owner', lazy=True)
+
+class Pet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    location = db.Column(db.String(100), nullable=False)
+    contact = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(20), default='lost')  # lost or found
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 # Qeydiyyat (Registration) 
 @app.route('/register', methods=['GET', 'POST'])
@@ -56,11 +66,36 @@ def login():
 @app.route('/')
 @login_required
 def index():
-    return render_template('index.html')
+    pets = Pet.query.all()
+    return render_template('index.html', pets=pets)
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+@app.route('/post_ad', methods=['GET', 'POST'])
+@login_required
+def post_ad():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        description = request.form.get('description')
+        location = request.form.get('location')
+        contact = request.form.get('contact')
+        status = request.form.get('status')
+
+        new_pet = Pet(
+            name=name,
+            description=description,
+            location=location,
+            contact=contact,
+            status=status,
+            user_id=current_user.id
+        )
+        db.session.add(new_pet)
+        db.session.commit()
+        flash('Elan uğurla yerləşdirildi!')
+        return redirect(url_for('index'))
+    return render_template('post_ad.html')
 
 @app.route('/logout')
 @login_required

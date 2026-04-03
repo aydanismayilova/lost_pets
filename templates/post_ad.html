@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qeydiyyat - Heyvanlar Platforması</title>
+    <title>Elan Yerləşdir - Heyvanlar Platforması</title>
     <style>
         body {
             margin: 0;
@@ -13,25 +13,23 @@
             url('https://img.freepik.com/free-photo/cute-puppy-group-sitting-looking-camera-indoors-generated-by-artificial-intelligence_188544-113182.jpg?t=st&w=1380&epik=dj0yJnU9OUREcFFhTXFnSnZVS2V2YlVrN1ByYldNUjk0cm1Mbi0mcD0wJm49NXlaYm1aXzFVUVM3WDR5ZjVhZXZkUSZ0PUFBQUFBR25OcW0w');
             background-size: cover;
             background-position: center;
-            background-size: cover;
-            background-position: center;
             background-attachment: fixed;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
-        .register-card {
+        .form-card {
             background: rgba(255, 255, 255, 0.95);
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            width: 380px;
+            width: 500px;
             text-align: center;
         }
         h2 { color: #2d3436; margin-bottom: 10px; font-size: 28px; }
         p.subtitle { color: #636e72; margin-bottom: 25px; }
-        input {
+        input, textarea, select {
             width: 100%;
             padding: 12px 15px;
             margin: 10px 0;
@@ -41,7 +39,8 @@
             outline: none;
             transition: 0.3s;
         }
-        input:focus { border-color: #00b894; }
+        input:focus, textarea:focus, select:focus { border-color: #00b894; }
+        textarea { resize: vertical; min-height: 80px; }
         button {
             width: 100%;
             padding: 14px;
@@ -64,14 +63,14 @@
             margin-bottom: 15px;
             font-size: 13px;
         }
-        .footer-text { margin-top: 20px; font-size: 14px; color: #636e72; }
-        .footer-text a { color: #00b894; text-decoration: none; font-weight: bold; }
+        .back-link { margin-top: 20px; font-size: 14px; color: #636e72; }
+        .back-link a { color: #00b894; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="register-card">
-        <h2>Xoş Gəldiniz! 🐾</h2>
-        <p class="subtitle">Onlara evini tapmaqda kömək et.</p>
+    <div class="form-card">
+        <h2>Yeni Elan Yerləşdir 🐾</h2>
+        <p class="subtitle">İtirilmiş və ya tapılmış heyvan haqqında məlumat verin.</p>
         {% with messages = get_flashed_messages() %}
           {% if messages %}
             {% for message in messages %}
@@ -81,12 +80,18 @@
         {% endwith %}
 
         <form method="POST">
-            <input type="text" name="username" placeholder="İstifadəçi adı" required>
-            <input type="password" name="password" placeholder="Şifrə" required>
-            <button type="submit">Qeydiyyatı Tamamla</button>
+            <input type="text" name="name" placeholder="Heyvanın adı (məs. Şarik)" required>
+            <textarea name="description" placeholder="Təsvir (heyvanın xüsusiyyətləri, itirildiyi yer və vaxt)" required></textarea>
+            <input type="text" name="location" placeholder="Yerləşmə (şəhər, rayon)" required>
+            <input type="text" name="contact" placeholder="Əlaqə məlumatı (telefon, email)" required>
+            <select name="status" required>
+                <option value="lost">İtirilib</option>
+                <option value="found">Tapılıb</option>
+            </select>
+            <button type="submit">Elanı Yerləşdir</button>
         </form>
-        <div class="footer-text">
-            Artıq hesabınız var? <a href="/login">Giriş edin</a>
+        <div class="back-link">
+            <a href="/">← Ana səhifəyə qayıt</a>
         </div>
     </div>
 </body>
